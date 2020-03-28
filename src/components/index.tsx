@@ -1,5 +1,7 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import styled from "styled-components";
+
+import Maybe from "../helper/Maybe";
 
 import { ReactComponent as Icon } from "../images/icon.svg";
 
@@ -19,12 +21,21 @@ const AsyncInput = styled.input`
 `;
 
 const Async: FC = () => {
+  const [isOpenList, setIsOpenList] = useState<boolean>(false);
+
+  const handleClick = (): void => {
+    setIsOpenList(true);
+  };
+
   return (
     <AsyncContainer>
       <AsyncWrapper>
-        <AsyncInput />
+        <AsyncInput onClick={handleClick} />
         <Icon width="12" height="12" />
       </AsyncWrapper>
+      <Maybe isOpen={isOpenList}>
+        <div>hi</div>
+      </Maybe>
     </AsyncContainer>
   );
 };
