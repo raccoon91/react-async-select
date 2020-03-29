@@ -12,6 +12,7 @@ const ListContainer = styled.div<IListContainerProps>`
   top: ${({ height }): string => height || "2rem"};
   width: 100%;
   max-height: 25rem;
+  margin-top: 0.5rem;
   border: 1px solid black;
   background-color: white;
   box-sizing: border-box;
@@ -24,6 +25,7 @@ const Item = styled.div`
   &:hover {
     background-color: blue;
     color: white;
+    cursor: pointer;
   }
 `;
 const EmptyData = styled.div`

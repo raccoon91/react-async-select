@@ -18,7 +18,6 @@ const Overlay = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: black;
   z-index: 1;
 `;
 
