@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useRef } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 
 import Maybe from "../../helper/Maybe";
@@ -97,7 +97,7 @@ interface IAsyncProps {
   height?: string;
   inputValue: string;
   displayedValue?: string;
-  handleChangeInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChangeInput: (value: string) => void;
   onClickItem: (data: ListItem) => void;
   debouncedList: ListItem[];
   message?: string;
@@ -113,18 +113,15 @@ const Async: FC<IAsyncProps> = ({
   debouncedList,
   message,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [isOpenList, setIsOpenList] = useState<boolean>(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
-  const handleClick = (): void => {
-    if (isOpenList) {
-      setIsOpenList(false);
-    } else {
-      setIsOpenList(true);
-    }
-  };
-
   const handleFocus = (): void => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+
     setIsFocused(true);
     setIsOpenList(true);
   };
@@ -132,6 +129,21 @@ const Async: FC<IAsyncProps> = ({
   const handleBlur = (): void => {
     setIsFocused(false);
     setIsOpenList(false);
+    handleChangeInput("");
+  };
+
+  const handleClick = (): void => {
+    if (isFocused) {
+      handleBlur();
+    } else {
+      handleFocus();
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const { value } = e.target;
+
+    handleChangeInput(value);
   };
 
   return (
@@ -147,7 +159,13 @@ const Async: FC<IAsyncProps> = ({
                 <Displayedvalue>{displayedValue}</Displayedvalue>
               </DisplayWrapper>
             ) : null}
-            <AsyncInput value={inputValue} onChange={handleChangeInput} onFocus={handleFocus} />
+            <AsyncInput
+              ref={inputRef}
+              value={inputValue}
+              placeholder="placeholder"
+              onChange={handleChange}
+              onFocus={handleFocus}
+            />
           </AsyncInputWrapper>
           <AngleIcon open={isOpenList} onClick={handleClick} />
         </AsyncWrapper>

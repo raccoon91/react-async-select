@@ -28,9 +28,7 @@ const App: FC = () => {
   const [debouncedList, setDebouncedList] = useState<ListItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<string>("");
 
-  const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { value } = e.target;
-
+  const handleChangeInput = (value: string): void => {
     setInputValue(value);
     setInterval(
       debounce(
