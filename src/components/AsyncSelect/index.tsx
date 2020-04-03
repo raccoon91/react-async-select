@@ -50,14 +50,14 @@ const AsyncContainer = styled.div`
   z-index: 2;
 `;
 
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1;
-`;
+// const Overlay = styled.div`
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   width: 100vw;
+//   height: 100vh;
+//   z-index: 1;
+// `;
 
 interface IAsyncWrapperProps {
   containerStyle: StyleObject;
@@ -108,39 +108,44 @@ const AsyncInput = styled.input<IAsyncInputProps>`
     `}
 `;
 
-const Controler = styled.div`
+const AngleIcon = styled(Icon)`
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.3s ease-out;
+  cursor: pointer;
+`;
+
+interface IControlerProps {
+  isOpenList: boolean;
+  isPending: boolean;
+  active: boolean;
+}
+const Controler = styled.div<IControlerProps>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 2rem;
   height: 90%;
-`;
 
-interface IAngleIconProps {
-  open: boolean;
-  isPending: boolean;
-  active: boolean;
-}
-const AngleIcon = styled(Icon)<IAngleIconProps>`
-  width: 1rem;
-  height: 1rem;
-  fill: ${({ active }): string => (active ? "black" : " gray")};
-  transition: transform 0.3s ease-out;
-  cursor: pointer;
+  ${AngleIcon} {
+    fill: ${({ active }): string => (active ? "black" : " gray")};
 
-  ${({ open }): FlattenSimpleInterpolation =>
-    open
-      ? css`
-          transform: rotate(180deg);
-        `
-      : css`
-          transform: rotate(0deg);
-        `}
-  ${({ isPending }): FlattenSimpleInterpolation | false =>
-    isPending &&
-    css`
-      animation: load 0.5s ease-in-out infinite;
-    `}
+    ${({ isOpenList }): FlattenSimpleInterpolation =>
+      isOpenList
+        ? css`
+            transform: rotate(180deg);
+          `
+        : css`
+            transform: rotate(0deg);
+          `}
+
+    ${({ isPending }): FlattenSimpleInterpolation =>
+      isPending
+        ? css`
+            animation: load 0.5s ease-in-out infinite;
+          `
+        : css``}
+  }
 
   @keyframes load {
     0% {
@@ -193,6 +198,8 @@ const Async: FC<IAsyncProps> = ({
   const [isOpenList, setIsOpenList] = useState<boolean>(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
+  const displayedList = inputValue ? debouncedList : [];
+
   const containerStyle =
     style && style.containerStyle ? style.containerStyle(containerDefaultStyle) : containerDefaultStyle;
   const inputStyle = style && style.inputStyle ? style.inputStyle(inputDefaultStyle) : inputDefaultStyle;
@@ -210,17 +217,12 @@ const Async: FC<IAsyncProps> = ({
   };
 
   const handleBlur = (): void => {
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
     setIsFocused(false);
     setIsOpenList(false);
     handleChangeInput("");
-  };
-
-  const handleClick = (): void => {
-    if (isFocused) {
-      handleBlur();
-    } else {
-      handleFocus();
-    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -229,49 +231,60 @@ const Async: FC<IAsyncProps> = ({
     handleChangeInput(value);
   };
 
+  const onInputBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    console.log("onBlur");
+
+    if (isOpenList) {
+      setTimeout(() => {
+        handleBlur();
+      }, 200);
+    }
+  };
+
+  const onInputClick = (): void => {
+    console.log(isFocused);
+    if (isFocused) {
+      handleBlur();
+    } else {
+      handleFocus();
+    }
+  };
+
   return (
-    <>
-      <Maybe isOpen={isOpenList}>
-        <Overlay onClick={handleBlur} />
-      </Maybe>
-      <AsyncContainer>
-        <AsyncWrapper containerStyle={containerStyle}>
-          <AsyncInputWrapper>
-            {displayedValue && !isFocused ? (
-              <DisplayWrapper onClick={handleFocus}>
-                <Displayedvalue>{displayedValue}</Displayedvalue>
-              </DisplayWrapper>
-            ) : null}
-            <AsyncInput
-              ref={inputRef}
-              value={inputValue}
-              placeholder="검색어를 입력해주세요."
-              onChange={handleChange}
-              onFocus={handleFocus}
-              inputStyle={inputStyle}
-            />
-          </AsyncInputWrapper>
-          <Controler>
-            <AngleIcon
-              open={isOpenList}
-              onClick={handleClick}
-              isPending={isPending}
-              active={debouncedList.length !== 0}
-            />
-          </Controler>
-        </AsyncWrapper>
-        <Maybe isOpen={isOpenList}>
-          <List
-            message={message}
-            onClickItem={onClickItem}
-            handleBlur={handleBlur}
-            debouncedList={debouncedList}
-            listContainerStyle={listContainerStyle}
-            listItemStyle={listItemStyle}
+    <AsyncContainer>
+      <AsyncWrapper containerStyle={containerStyle} onClick={onInputClick}>
+        <AsyncInputWrapper>
+          {displayedValue && !isFocused ? (
+            <DisplayWrapper onClick={handleFocus}>
+              <Displayedvalue>{displayedValue}</Displayedvalue>
+            </DisplayWrapper>
+          ) : null}
+          <AsyncInput
+            ref={inputRef}
+            value={inputValue}
+            placeholder="검색어를 입력해주세요."
+            onBlur={onInputBlur}
+            onChange={handleChange}
+            inputStyle={inputStyle}
           />
-        </Maybe>
-      </AsyncContainer>
-    </>
+        </AsyncInputWrapper>
+        <Controler isOpenList={isOpenList} isPending={isPending} active={displayedList.length !== 0}>
+          <AngleIcon />
+        </Controler>
+      </AsyncWrapper>
+      <Maybe isOpen={isOpenList}>
+        <List
+          message={message}
+          onClickItem={onClickItem}
+          handleBlur={handleBlur}
+          debouncedList={displayedList}
+          listContainerStyle={listContainerStyle}
+          listItemStyle={listItemStyle}
+        />
+      </Maybe>
+    </AsyncContainer>
   );
 };
 
