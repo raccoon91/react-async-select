@@ -8,7 +8,7 @@ import { ReactComponent as Icon } from "../../images/angle-down.svg";
 
 export type StyleObject = CSSObject;
 
-const controlerDefaultStyle: StyleObject = {
+const containerDefaultStyle: StyleObject = {
   width: "10rem",
   height: "2rem",
   padding: "0 0.5rem",
@@ -29,7 +29,6 @@ const listContainerDefaultStyle: StyleObject = {
   top: "2rem",
   width: "100%",
   "max-height": "25rem",
-  "margin-top": "0.5rem",
   border: "1px solid black",
   "background-color": "white",
   "box-sizing": "border-box",
@@ -61,7 +60,7 @@ const Overlay = styled.div`
 `;
 
 interface IAsyncWrapperProps {
-  controlerStyle: StyleObject;
+  containerStyle: StyleObject;
 }
 const AsyncWrapper = styled.div<IAsyncWrapperProps>`
   display: flex;
@@ -69,9 +68,9 @@ const AsyncWrapper = styled.div<IAsyncWrapperProps>`
   justify-content: space-between;
   box-sizing: border-box;
 
-  ${({ controlerStyle }): FlattenSimpleInterpolation =>
+  ${({ containerStyle }): FlattenSimpleInterpolation =>
     css`
-      ${controlerStyle}
+      ${containerStyle}
     `};
 `;
 
@@ -109,13 +108,23 @@ const AsyncInput = styled.input<IAsyncInputProps>`
     `}
 `;
 
+const Controler = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 90%;
+`;
+
 interface IAngleIconProps {
   open: boolean;
+  isPending: boolean;
+  active: boolean;
 }
 const AngleIcon = styled(Icon)<IAngleIconProps>`
   width: 1rem;
   height: 1rem;
-  fill: grey;
+  fill: ${({ active }): string => (active ? "black" : " gray")};
   transition: transform 0.3s ease-out;
   cursor: pointer;
 
@@ -127,6 +136,26 @@ const AngleIcon = styled(Icon)<IAngleIconProps>`
       : css`
           transform: rotate(0deg);
         `}
+  ${({ isPending }): FlattenSimpleInterpolation | false =>
+    isPending &&
+    css`
+      animation: load 0.5s ease-in-out infinite;
+    `}
+
+  @keyframes load {
+    0% {
+      fill: grey;
+    }
+    25% {
+      fill: black;
+    }
+    75% {
+      fill: black;
+    }
+    100% {
+      fill: grey;
+    }
+  }
 `;
 
 export interface ListItem {
@@ -140,9 +169,10 @@ export interface IAsyncProps {
   handleChangeInput: (value: string) => void;
   onClickItem: (data: ListItem) => void;
   debouncedList: ListItem[];
+  isPending: boolean;
   message?: string;
   style?: {
-    controlerStyle?: (props: StyleObject) => StyleObject;
+    containerStyle?: (props: StyleObject) => StyleObject;
     inputStyle?: (props: StyleObject) => StyleObject;
     listContainerStyle?: (props: StyleObject) => StyleObject;
     listItemStyle?: (props: StyleObject) => StyleObject;
@@ -155,6 +185,7 @@ const Async: FC<IAsyncProps> = ({
   handleChangeInput,
   onClickItem,
   debouncedList,
+  isPending,
   message,
   style,
 }) => {
@@ -162,8 +193,8 @@ const Async: FC<IAsyncProps> = ({
   const [isOpenList, setIsOpenList] = useState<boolean>(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
-  const controlerStyle =
-    style && style.controlerStyle ? style.controlerStyle(controlerDefaultStyle) : controlerDefaultStyle;
+  const containerStyle =
+    style && style.containerStyle ? style.containerStyle(containerDefaultStyle) : containerDefaultStyle;
   const inputStyle = style && style.inputStyle ? style.inputStyle(inputDefaultStyle) : inputDefaultStyle;
   const listContainerStyle =
     style && style.listContainerStyle ? style.listContainerStyle(listContainerDefaultStyle) : listContainerDefaultStyle;
@@ -204,7 +235,7 @@ const Async: FC<IAsyncProps> = ({
         <Overlay onClick={handleBlur} />
       </Maybe>
       <AsyncContainer>
-        <AsyncWrapper controlerStyle={controlerStyle}>
+        <AsyncWrapper containerStyle={containerStyle}>
           <AsyncInputWrapper>
             {displayedValue && !isFocused ? (
               <DisplayWrapper onClick={handleFocus}>
@@ -220,7 +251,14 @@ const Async: FC<IAsyncProps> = ({
               inputStyle={inputStyle}
             />
           </AsyncInputWrapper>
-          <AngleIcon open={isOpenList} onClick={handleClick} />
+          <Controler>
+            <AngleIcon
+              open={isOpenList}
+              onClick={handleClick}
+              isPending={isPending}
+              active={debouncedList.length !== 0}
+            />
+          </Controler>
         </AsyncWrapper>
         <Maybe isOpen={isOpenList}>
           <List

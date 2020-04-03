@@ -25,6 +25,7 @@ const App: FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [debouncedValue, setDebouncedValue] = useState<string>("");
   const [interval, setInterval] = useState<number | null>(null);
+  const [isPending, setIsPending] = useState<boolean>(false);
   const [debouncedList, setDebouncedList] = useState<ListItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<string>("");
 
@@ -43,6 +44,7 @@ const App: FC = () => {
 
   const getFakeData = async (debouncedValue: string) => {
     try {
+      setIsPending(true);
       const keyword = debouncedValue.split("").reduce((acc, cur) => {
         return (acc += cur.charCodeAt(0));
       }, 0);
@@ -68,6 +70,8 @@ const App: FC = () => {
       }
     } catch (error) {
       console.warn(error);
+    } finally {
+      setIsPending(false);
     }
   };
 
@@ -82,9 +86,10 @@ const App: FC = () => {
   };
 
   const style = {
-    controlerStyle: (props: StyleObject): StyleObject => ({
+    containerStyle: (props: StyleObject): StyleObject => ({
       ...props,
       width: "20rem",
+      height: "2.5rem",
     }),
     inputStyle: (props: StyleObject): StyleObject => ({
       ...props,
@@ -92,6 +97,7 @@ const App: FC = () => {
     }),
     listContainerStyle: (props: StyleObject): StyleObject => ({
       ...props,
+      top: "2.7rem",
       "border-radius": "5px",
     }),
     listItemStyle: (props: StyleObject): StyleObject => ({
@@ -110,6 +116,7 @@ const App: FC = () => {
         handleChangeInput={handleChangeInput}
         onClickItem={onClickItem}
         debouncedList={debouncedList}
+        isPending={isPending}
         message="데이터가 없습니다."
         style={style}
       />
