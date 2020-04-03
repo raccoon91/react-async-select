@@ -2,7 +2,7 @@ import React, { FC, useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
 
-import Async, { ListItem } from "./components/AsyncSelect/index";
+import Async, { ListItem, StyleObject } from "./components/AsyncSelect/index";
 
 import debounce from "./utils/debounce";
 
@@ -81,17 +81,37 @@ const App: FC = () => {
     setSelectedItem(data.value);
   };
 
+  const style = {
+    controlerStyle: (props: StyleObject): StyleObject => ({
+      ...props,
+      width: "20rem",
+    }),
+    inputStyle: (props: StyleObject): StyleObject => ({
+      ...props,
+      color: "red",
+    }),
+    listContainerStyle: (props: StyleObject): StyleObject => ({
+      ...props,
+      "border-radius": "5px",
+    }),
+    listItemStyle: (props: StyleObject): StyleObject => ({
+      ...props,
+      "&:hover": {
+        "background-color": "red",
+      },
+    }),
+  };
+
   return (
     <AppConatiner>
       <Async
-        width="25rem"
-        height=" 3rem"
         inputValue={inputValue}
         displayedValue={selectedItem}
         handleChangeInput={handleChangeInput}
         onClickItem={onClickItem}
         debouncedList={debouncedList}
         message="데이터가 없습니다."
+        style={style}
       />
     </AppConatiner>
   );
