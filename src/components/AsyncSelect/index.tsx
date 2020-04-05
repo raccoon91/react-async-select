@@ -1,10 +1,8 @@
 import React, { FC, useState, useRef } from "react";
 import styled, { css, FlattenSimpleInterpolation, CSSObject } from "styled-components";
 
-import Maybe from "../../helper/Maybe";
+import Maybe from "./Maybe";
 import List from "./List";
-
-import { ReactComponent as Icon } from "../../images/angle-down.svg";
 
 export type StyleObject = CSSObject;
 
@@ -99,13 +97,6 @@ const AsyncInput = styled.input<IAsyncInputProps>`
     `}
 `;
 
-const AngleIcon = styled(Icon)`
-  width: 1rem;
-  height: 1rem;
-  transition: transform 0.3s ease-out;
-  cursor: pointer;
-`;
-
 interface IControlerProps {
   isOpenList: boolean;
   isPending: boolean;
@@ -117,41 +108,6 @@ const Controler = styled.div<IControlerProps>`
   justify-content: center;
   width: 2rem;
   height: 90%;
-
-  ${AngleIcon} {
-    fill: ${({ active }): string => (active ? "black" : " gray")};
-
-    ${({ isOpenList }): FlattenSimpleInterpolation =>
-      isOpenList
-        ? css`
-            transform: rotate(180deg);
-          `
-        : css`
-            transform: rotate(0deg);
-          `}
-
-    ${({ isPending }): FlattenSimpleInterpolation =>
-      isPending
-        ? css`
-            animation: load 0.5s ease-in-out infinite;
-          `
-        : css``}
-  }
-
-  @keyframes load {
-    0% {
-      fill: grey;
-    }
-    25% {
-      fill: black;
-    }
-    75% {
-      fill: black;
-    }
-    100% {
-      fill: grey;
-    }
-  }
 `;
 
 export interface ListItem {
@@ -261,9 +217,6 @@ const Async: FC<IAsyncProps> = ({
             inputStyle={inputStyle}
           />
         </AsyncInputWrapper>
-        <Controler isOpenList={isOpenList} isPending={isPending} active={displayedList.length !== 0}>
-          <AngleIcon />
-        </Controler>
       </AsyncWrapper>
       <Maybe isOpen={isOpenList}>
         <List
