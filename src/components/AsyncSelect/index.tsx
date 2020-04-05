@@ -97,19 +97,6 @@ const AsyncInput = styled.input<IAsyncInputProps>`
     `}
 `;
 
-interface IControlerProps {
-  isOpenList: boolean;
-  isPending: boolean;
-  active: boolean;
-}
-const Controler = styled.div<IControlerProps>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 90%;
-`;
-
 export interface ListItem {
   name: string;
   value: string;
@@ -121,7 +108,7 @@ export interface IAsyncProps {
   handleChangeInput: (value: string) => void;
   onClickItem: (data: ListItem) => void;
   debouncedList: ListItem[];
-  isPending: boolean;
+  isPending?: boolean;
   message?: string;
   style?: {
     containerStyle?: (props: StyleObject) => StyleObject;
