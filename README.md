@@ -1,4 +1,4 @@
-# React Async Input
+# React-Async-Select
 
 The Async Select NPM package for React
 
