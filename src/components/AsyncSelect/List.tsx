@@ -60,11 +60,18 @@ const List: FC<IListProps> = ({
 }) => {
   const listRef = useRef<HTMLDivElement>(null);
 
-  const handleSelectListItem = (data: ListItem) => {
-    return (): void => {
-      if (handleSelectItem) handleSelectItem(data);
-      handleBlur();
-    };
+  const handleClickItem = (e: React.SyntheticEvent<HTMLDivElement>) => {
+    const index = Number(e.currentTarget.dataset.index);
+
+    handleSelectItem(debouncedList[index]);
+    setListIndex(0);
+    handleBlur();
+  };
+
+  const handleMouseEnterListItme = (e: React.SyntheticEvent<HTMLDivElement>) => {
+    const index = Number(e.currentTarget.dataset.index);
+
+    setListIndex(index);
   };
 
   useEffect(() => {
@@ -78,12 +85,6 @@ const List: FC<IListProps> = ({
     }
   }, [listIndex, listRef]);
 
-  const handleMouseEnterListItme = (e: React.SyntheticEvent<HTMLDivElement>) => {
-    const index = Number(e.currentTarget.dataset.index);
-
-    setListIndex(index);
-  };
-
   return (
     <ListContainer ref={listRef} listContainerStyle={listContainerStyle}>
       {debouncedList.length ? (
@@ -92,7 +93,7 @@ const List: FC<IListProps> = ({
             onMouseEnter={handleMouseEnterListItme}
             key={index}
             data-index={index}
-            onClick={handleSelectListItem(listItem)}
+            onClick={handleClickItem}
             selected={index === listIndex}
             listItemStyle={listItemStyle}
             listItemSelectStyle={listItemSelectStyle}

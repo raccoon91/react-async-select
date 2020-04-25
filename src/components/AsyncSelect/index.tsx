@@ -199,6 +199,7 @@ const Async: FC<IAsyncProps> = ({
     if (debouncedList.length) {
       if (key === "Enter") {
         handleSelectItem(debouncedList[listIndex]);
+        setListIndex(0);
         handleBlur();
         return;
       }
