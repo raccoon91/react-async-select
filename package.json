@@ -1,6 +1,6 @@
 {
   "name": "react-async-select",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "private": false,
   "license": "MIT",
   "main": "build/index.js",
@@ -11,24 +11,12 @@
     "start": "react-scripts start",
     "build": "rm -rf ./build && rollup -c"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "peerDependencies": {
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "styled-components": "^5.1.0"
+  },
+  "dependencies": {
     "styled-components": "^5.1.0"
   },
   "devDependencies": {
@@ -53,11 +41,22 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-peer-deps-external": "^2.2.2",
     "rollup-plugin-typescript2": "^0.27.0",
-    "styled-components": "^5.1.0",
     "typescript": "^3.8.3"
   },
   "repository": {
     "type": "git",
     "url": "http://github.com/raccoon91/react-async-select"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
