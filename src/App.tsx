@@ -25,7 +25,7 @@ const App: FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
   const [debouncedValue, setDebouncedValue] = useState<string>("");
   const [interval, setInterval] = useState<number | null>(null);
-  const [isPending, setIsPending] = useState<boolean>(false);
+  // const [isPending, setIsPending] = useState<boolean>(false);
   const [debouncedList, setDebouncedList] = useState<ListItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<string>("");
 
@@ -44,7 +44,7 @@ const App: FC = () => {
 
   const getFakeData = async (debouncedValue: string) => {
     try {
-      setIsPending(true);
+      // setIsPending(true);
       const keyword = debouncedValue.split("").reduce((acc, cur) => {
         return (acc += cur.charCodeAt(0));
       }, 0);
@@ -71,7 +71,7 @@ const App: FC = () => {
     } catch (error) {
       console.warn(error);
     } finally {
-      setIsPending(false);
+      // setIsPending(false);
     }
   };
 
@@ -81,7 +81,7 @@ const App: FC = () => {
     }
   }, [debouncedValue]);
 
-  const onClickItem = (data: ListItem): void => {
+  const handleSelectItem = (data: ListItem): void => {
     setSelectedItem(data.value);
   };
 
@@ -102,9 +102,10 @@ const App: FC = () => {
     }),
     listItemStyle: (props: StyleObject): StyleObject => ({
       ...props,
-      "&:hover": {
-        "background-color": "red",
-      },
+    }),
+    listItemSelectStyle: (props: StyleObject): StyleObject => ({
+      ...props,
+      "background-color": "green",
     }),
   };
 
@@ -114,9 +115,8 @@ const App: FC = () => {
         inputValue={inputValue}
         displayedValue={selectedItem}
         handleChangeInput={handleChangeInput}
-        onClickItem={onClickItem}
+        handleSelectItem={handleSelectItem}
         debouncedList={debouncedList}
-        isPending={isPending}
         message="데이터가 없습니다."
         style={style}
       />

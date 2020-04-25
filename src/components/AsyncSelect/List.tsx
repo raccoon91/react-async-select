@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useRef, useEffect } from "react";
 import styled, { css, FlattenSimpleInterpolation } from "styled-components";
 
 import { ListItem, StyleObject } from "./index";
@@ -14,13 +14,20 @@ const ListContainer = styled.div<IListContainerProps>`
 `;
 
 interface IItemProps {
+  selected: boolean;
   listItemStyle: StyleObject;
+  listItemSelectStyle: StyleObject;
 }
 const Item = styled.div<IItemProps>`
-  ${({ listItemStyle }): FlattenSimpleInterpolation =>
-    css`
-      ${listItemStyle}
-    `}
+  ${({ selected, listItemStyle, listItemSelectStyle }) =>
+    selected
+      ? css`
+          ${listItemStyle}
+          ${listItemSelectStyle}
+        `
+      : css`
+          ${listItemStyle}
+        `}
 `;
 
 const EmptyData = styled.div`
@@ -31,32 +38,65 @@ const EmptyData = styled.div`
 
 interface IListProps {
   message?: string;
-  onClickItem: (data: ListItem) => void;
-  handleBlur: () => void;
+  listIndex: number;
   debouncedList: ListItem[];
+  setListIndex: React.Dispatch<React.SetStateAction<number>>;
+  handleSelectItem: (data: ListItem) => void;
+  handleBlur: () => void;
   listContainerStyle: StyleObject;
   listItemStyle: StyleObject;
+  listItemSelectStyle: StyleObject;
 }
 const List: FC<IListProps> = ({
   message,
-  onClickItem,
-  handleBlur,
+  listIndex,
   debouncedList,
+  setListIndex,
+  handleSelectItem,
+  handleBlur,
   listContainerStyle,
   listItemStyle,
+  listItemSelectStyle,
 }) => {
-  const handleSelectItem = (data: ListItem) => {
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const handleSelectListItem = (data: ListItem) => {
     return (): void => {
-      if (onClickItem) onClickItem(data);
+      if (handleSelectItem) handleSelectItem(data);
       handleBlur();
     };
   };
 
+  useEffect(() => {
+    const list = listRef.current as HTMLDivElement;
+    const children = list.children;
+
+    if (list && children.length > 1) {
+      const child = children[listIndex] as HTMLDivElement;
+      const scroll = child.offsetTop;
+      list.scrollTop = scroll - 100;
+    }
+  }, [listIndex, listRef]);
+
+  const handleMouseEnterListItme = (e: React.SyntheticEvent<HTMLDivElement>) => {
+    const index = Number(e.currentTarget.dataset.index);
+
+    setListIndex(index);
+  };
+
   return (
-    <ListContainer listContainerStyle={listContainerStyle}>
+    <ListContainer ref={listRef} listContainerStyle={listContainerStyle}>
       {debouncedList.length ? (
         debouncedList.map((listItem, index) => (
-          <Item key={index} onClick={handleSelectItem(listItem)} listItemStyle={listItemStyle}>
+          <Item
+            onMouseEnter={handleMouseEnterListItme}
+            key={index}
+            data-index={index}
+            onClick={handleSelectListItem(listItem)}
+            selected={index === listIndex}
+            listItemStyle={listItemStyle}
+            listItemSelectStyle={listItemSelectStyle}
+          >
             {listItem.name}
           </Item>
         ))

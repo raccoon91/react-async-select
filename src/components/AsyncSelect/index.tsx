@@ -35,11 +35,11 @@ const listContainerDefaultStyle: StyleObject = {
 
 const listItemDefaultStyle: StyleObject = {
   padding: "0.3rem 0.2rem",
-  "&:hover": {
-    "background-color": "blue",
-    color: "white",
-    cursor: "pointer",
-  },
+};
+
+const listItemDefaultSelectStyle: StyleObject = {
+  color: "white",
+  cursor: "pointer",
 };
 
 const AsyncContainer = styled.div`
@@ -104,17 +104,17 @@ export interface ListItem {
 
 export interface IAsyncProps {
   inputValue: string;
-  displayedValue?: string;
+  displayedValue: string;
   handleChangeInput: (value: string) => void;
-  onClickItem: (data: ListItem) => void;
+  handleSelectItem: (data: ListItem) => void;
   debouncedList: ListItem[];
-  isPending?: boolean;
   message?: string;
   style?: {
     containerStyle?: (props: StyleObject) => StyleObject;
     inputStyle?: (props: StyleObject) => StyleObject;
     listContainerStyle?: (props: StyleObject) => StyleObject;
     listItemStyle?: (props: StyleObject) => StyleObject;
+    listItemSelectStyle?: (props: StyleObject) => StyleObject;
   };
 }
 
@@ -122,15 +122,15 @@ const Async: FC<IAsyncProps> = ({
   inputValue,
   displayedValue,
   handleChangeInput,
-  onClickItem,
+  handleSelectItem,
   debouncedList,
-  isPending,
   message,
   style,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpenList, setIsOpenList] = useState<boolean>(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [listIndex, setListIndex] = useState<number>(0);
 
   const displayedList = inputValue ? debouncedList : [];
 
@@ -140,6 +140,10 @@ const Async: FC<IAsyncProps> = ({
   const listContainerStyle =
     style && style.listContainerStyle ? style.listContainerStyle(listContainerDefaultStyle) : listContainerDefaultStyle;
   const listItemStyle = style && style.listItemStyle ? style.listItemStyle(listItemDefaultStyle) : listItemDefaultStyle;
+  const listItemSelectStyle =
+    style && style.listItemSelectStyle
+      ? style.listItemSelectStyle(listItemDefaultSelectStyle)
+      : listItemDefaultSelectStyle;
 
   const handleFocus = (): void => {
     if (inputRef.current) {
@@ -168,8 +172,6 @@ const Async: FC<IAsyncProps> = ({
   const onInputBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     e.preventDefault();
 
-    console.log("onBlur");
-
     if (isOpenList) {
       setTimeout(() => {
         handleBlur();
@@ -178,11 +180,40 @@ const Async: FC<IAsyncProps> = ({
   };
 
   const onInputClick = (): void => {
-    console.log(isFocused);
     if (isFocused) {
       handleBlur();
     } else {
       handleFocus();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    const { key } = e;
+    let index: number;
+
+    if (key === "Escape") {
+      handleBlur();
+      return;
+    }
+
+    if (debouncedList.length) {
+      if (key === "Enter") {
+        handleSelectItem(debouncedList[listIndex]);
+        handleBlur();
+        return;
+      }
+
+      if (key === "ArrowDown") {
+        index = listIndex < debouncedList.length - 1 ? listIndex + 1 : 0;
+
+        setListIndex(index);
+      }
+
+      if (key === "ArrowUp") {
+        index = listIndex >= 1 ? listIndex - 1 : debouncedList.length - 1;
+
+        setListIndex(index);
+      }
     }
   };
 
@@ -201,6 +232,7 @@ const Async: FC<IAsyncProps> = ({
             placeholder="검색어를 입력해주세요."
             onBlur={onInputBlur}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             inputStyle={inputStyle}
           />
         </AsyncInputWrapper>
@@ -208,11 +240,14 @@ const Async: FC<IAsyncProps> = ({
       <Maybe isOpen={isOpenList}>
         <List
           message={message}
-          onClickItem={onClickItem}
-          handleBlur={handleBlur}
+          listIndex={listIndex}
           debouncedList={displayedList}
+          handleSelectItem={handleSelectItem}
+          handleBlur={handleBlur}
+          setListIndex={setListIndex}
           listContainerStyle={listContainerStyle}
           listItemStyle={listItemStyle}
+          listItemSelectStyle={listItemSelectStyle}
         />
       </Maybe>
     </AsyncContainer>
