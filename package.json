@@ -1,6 +1,6 @@
 {
   "name": "react-async-select",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "private": false,
   "license": "MIT",
   "main": "build/index.js",
@@ -27,6 +27,8 @@
     ]
   },
   "peerDependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "styled-components": "^5.1.0"
   },
   "devDependencies": {
@@ -54,8 +56,8 @@
     "styled-components": "^5.1.0",
     "typescript": "^3.8.3"
   },
-  "bugs": {
-    "url": "http://github.com/raccoon91/react-async-select",
-    "email": "qsx314@gmail.com"
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/raccoon91/react-async-select"
   }
 }
