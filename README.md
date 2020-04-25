@@ -8,6 +8,7 @@ The Async Select NPM package for React
 - Render search list
 - display selected list item
 - customize style
+- arrow key select
 
 ## Installation and Usage
 
@@ -33,9 +34,10 @@ const style = {
   }),
   listItemStyle: (props: StyleObject): StyleObject => ({
     ...props,
-    "&:hover": {
-      "background-color": "red",
-    },
+  }),
+  listItemSelectStyle: (props: StyleObject): StyleObject => ({
+    ...props,
+    "background-color": "green",
   }),
 };
 
@@ -43,12 +45,28 @@ const style = {
   inputValue={inputValue}
   displayedValue={selectedItem}
   handleChangeInput={handleChangeInput}
-  onClickItem={onClickItem}
+  handleSelectItem={handleSelectItem}
   debouncedList={debouncedList}
   message="Empty"
   style={style}
 />
 ```
+
+## Props
+- inputValue - displayed input value;
+- displayedValue - displayed select value
+- handleChangeInput - input change function : (value: string) => void
+- handleSelectItem - list item select function : (data: ListItem) => void
+- debouncedList - list item array
+  - name - displayed value
+  - value - custom value to select
+- message - list item message before response *optional*
+- style - custom style *optional*
+  - containerStyle - selectbox style (props: StyleObject) => StyleObject *optional*
+  - inputStyle - input style (props: StyleObject) => StyleObject; *optional*
+  - listContainerStyle - list box style (props: StyleObject) => StyleObject; *optional*
+  - listItemStyle - list item style (props: StyleObject) => StyleObject; *optional*
+  - listItemSelectColor - keyboard select & hover item style (props: StyleObject) => StyleObject; *optional*
 
 ## Project
 
