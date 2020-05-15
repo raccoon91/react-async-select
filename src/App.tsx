@@ -88,16 +88,17 @@ const App: FC = () => {
   const style = {
     containerStyle: (props: StyleObject): StyleObject => ({
       ...props,
-      width: "20rem",
-      height: "2.5rem",
+      width: "30rem",
+      height: "3rem",
+      borderRadius: "5px",
     }),
     inputStyle: (props: StyleObject): StyleObject => ({
       ...props,
-      color: "red",
+      fontSize: "16px",
     }),
     listContainerStyle: (props: StyleObject): StyleObject => ({
       ...props,
-      top: "2.7rem",
+      top: "3.2rem",
       "border-radius": "5px",
     }),
     listItemStyle: (props: StyleObject): StyleObject => ({
@@ -105,7 +106,7 @@ const App: FC = () => {
     }),
     listItemSelectStyle: (props: StyleObject): StyleObject => ({
       ...props,
-      "background-color": "green",
+      "background-color": "blue",
     }),
   };
 
